@@ -1,3 +1,4 @@
+import codecs
 import os
 import pickle
 import json
@@ -110,8 +111,6 @@ result = list_drive_files(service, q="'root' in parents")
 result = list_drive_files(service, q="'root' in parents")
 print(result)
 
-
-
 '''
 # 指定のフォルダにあるファイル一覧を取得
 folder_id = get_drive_folder_id(service, ['ffbe-wotv-guild-analyze'])
@@ -120,6 +119,7 @@ print(result)
 '''
 
 file_path = "./sample.json"
+fw = codecs.open(file_path, 'w', 'utf-8')
 
 with open(file_path, 'w') as outfile:
-    json.dump(result, outfile, indent=4)
+    json.dump(result, fw, indent=4, ensure_ascii=False)
