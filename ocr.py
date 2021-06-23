@@ -41,22 +41,37 @@ img = cv2.imread(f"./images/sample/{target}.PNG")
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 cv2.imwrite(f"./images/sample/trim/{target}_GRAY.PNG", img)
 
-
+"""
 threshold = 180
 img = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)[1]
 cv2.imwrite(
     f'./images/sample/trim/{target}_THRESHOLD{threshold}.PNG', img)
 
+
 img = cv2.bitwise_not(img)
 cv2.imwrite(f'./images/sample/trim/{target}_BITWISE.PNG', img)
+"""
 
 # OCR対象の画像ファイルを読み込む
 # img = Image.open("./images/concat/result.PNG")
 img = Image.open(f'./images/sample/trim/{target}_BITWISE.PNG')
+# img = Image.open(f'./images/sample/trim/{target}_GRAY.PNG')
 
 # 画像から文字を読み込む
 # tesseract_layout=1~6
 builder = pyocr.builders.TextBuilder(tesseract_layout=4)
 text = tool.image_to_string(img, lang="jpn", builder=builder)
 
-print(text)
+"""
+◆　書き込み用にファイルを開く
+"w" を指定した場合、対象のファイルが存在していない場合は新規に作成して書き込みます。
+ファイルが存在していた場合は、ファイルに上書きで書き込みます(元々ファイルに入っていた内容はすべてクリアされます)。
+
+"a" を指定した場合、対象のファイルが存在していない場合は新規に作成して書き込みます。
+ファイルが存在していた場合は、ファイルに元々入っていた内容はそのままで、最後に追加する形で書き込みます。
+
+"x" を指定した場合、対象のファイルが存在していない場合は新規に作成して書き込みます。
+ファイルが存在していた場合は、 FileExistsError が発生します。
+"""
+f = open('./text/result_2_value.txt', 'w', encoding='cp932')
+f.write(text)
