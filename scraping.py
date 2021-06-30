@@ -6,6 +6,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
 from selenium.webdriver.support.ui import Select
+import pandas as pd
 
 # 在庫管理 サイト を 開く
 driver = webdriver.Chrome('chromedriver.exe')
@@ -59,4 +60,48 @@ select1 = Select(dropdown1)
 # valueが"バッテリー"のoptionタグを選択状態にする
 select1.select_by_value("バッテリー")
 
+# 部品名検索ボタンをxpathで指定
+search = driver.find_element_by_xpath('/html/body/form/input[3]')
+search.click()
 
+# 表示されるまで待機
+driver.implicitly_wait(5)
+
+# 空リストの作成
+values1 = []  # 型番
+values2 = []  # 数量
+values3 = []  # 日時
+
+# テーブルのボディ部分を選択し、さらにその中にあるtrタグを全部取得
+table = driver.find_element_by_tag_name('tbody')
+elements = table.find_elements_by_tag_name('tr')
+
+for element in elements:
+    val1 = element.find_element_by_css_selector('td:nth-child(3)').text
+    val2 = element.find_element_by_css_selector('td:nth-child(7)').text
+    val3 = element.find_element_by_css_selector('td:nth-child(12)').text
+
+    values1.append(val1)
+    values2.append(val2)
+    values3.append(val3)
+
+print(values1, values2, values3)
+
+# メインメニューへ切り替え
+driver.switch_to.window(driver.window_handles[0])
+
+into = driver.find_element_by_xpath('html/body/p[2]/a[4]/img')
+
+ActionChains(driver).move_to_element(into).key_down(Keys.CONTROL).click().key_up(Keys.CONTROL).perform()
+
+driver.switch_to.window(driver.window_handles[-1])
+
+driver.implicitly_wait(10)
+
+search1 = driver.find_element_by_xpath('/html/body/form/input[2]')
+search1.click()
+
+driver.quit()
+
+df = pd.DataFrame({'型番': values1, '数量': values2, '日時': values3})
+df.to_csv("入庫履歴.csv", encoding="shift-jis")
